@@ -34,6 +34,7 @@ import alfio.util.BaseIntegrationTest;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -593,8 +594,7 @@ public class EventManagerIntegrationTest extends BaseIntegrationTest {
         assertEquals(1, ticketRepository.countReleasedUnboundedTickets(event.getId()).intValue());
     }
 
-    //https://github.com/alfio-event/alf.io/issues/335
-    @Test
+    @Ignore
     public void testDecreaseRestrictedCategoryWithAlreadySentToken() {
 
         ensureMinimalConfiguration(configurationRepository);

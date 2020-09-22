@@ -355,6 +355,8 @@ public class EventManager {
                 Validate.isTrue(ids.size() == invalidatedTickets, String.format("error during ticket invalidation: expected %d, got %d", ids.size(), invalidatedTickets));
             }
         }
+
+        // todo comment
     }
 
     private void validatePaymentProxies(List<PaymentProxy> paymentProxies, int organizationId) {
@@ -449,15 +451,6 @@ public class EventManager {
                     .checkPrecondition(() -> tcm.isTokenGenerationRequested() == existing.isAccessRestricted() || ticketRepository.countConfirmedAndPendingTickets(eventId, categoryId) == 0, ErrorCode.custom("", "cannot update category: there are tickets already sold."))
                     .checkPrecondition(() -> tcm.isBounded() == existing.isBounded() || ticketRepository.countPendingOrReleasedForCategory(eventId, existing.getId()) == 0, ErrorCode.custom("", "It is not safe to change allocation strategy right now because there are pending reservations."))
                     .checkPrecondition(() -> !existing.isAccessRestricted() || tcm.isBounded() == existing.isAccessRestricted(), ErrorCode.custom("", "Dynamic allocation is not compatible with restricted access"))
-                    .checkPrecondition(() -> {
-                        // see https://github.com/exteso/alf.io/issues/335
-                        // handle the case when the user try to shrink a category with tokens that are already sent
-                        // we should fail if there are not enough free token left
-                        int addedTicket = tcm.getMaxTickets() - existing.getMaxTickets();
-                        return addedTicket >= 0 ||
-                            !existing.isAccessRestricted() ||
-                            specialPriceRepository.countNotSentToken(categoryId) >= Math.abs(addedTicket);
-                    }, ErrorCode.CategoryError.NOT_ENOUGH_FREE_TOKEN_FOR_SHRINK)
                     .checkPrecondition(() -> {
                         if(tcm.isBounded() && !existing.isBounded()) {
                             int newSize = tcm.getMaxTickets();
